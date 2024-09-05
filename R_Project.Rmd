@@ -1,0 +1,105 @@
+---
+title: "Rise and Fall of Programming Languages"
+author: "Thu Rein Aung"
+date: "2024-09-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load necessary libraries
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+## Load and Inspecting the data
+
+```{r}
+programming_data <- read.csv("programming_data.csv")
+head(programming_data)
+```
+
+## 1.Trend Analysis: Percentage share of programming languages over the years
+
+```{r}
+all_programming_data <- programming_data %>%
+  mutate(percentage = round((number / year_total) * 100, 2))
+
+# Visualizing trends for popular programming languages
+popular_languages <- c("c#", "java", "javascript", "python", "r")
+selected_data <- all_programming_data %>%
+  filter(tag %in% popular_languages)
+
+ggplot(selected_data, aes(x = year, y = percentage, color = tag)) +
+  geom_line() +
+  labs(title = "Rise and Fall of Programming Languages",
+       x = "Year",
+       y = "Percentage of Total",
+       color = "Programming Languages") +
+  theme_minimal()
+```
+
+## 2. Most Popular Programming Languages Each Year
+
+```{r}
+most_popular <- all_programming_data %>%
+  group_by(year) %>%
+  top_n(1, number)
+
+cat("Most Popular Language Each Year:\n")
+print(most_popular)
+```
+
+## 3. Has R been growing or shrinking over time?
+
+```{r}
+r_over_time <- all_programming_data %>%
+  filter(tag == "r")
+
+ggplot(r_over_time, aes(x = year, y = percentage)) +
+  geom_line(color = "red") +
+  labs(title = "Growth of R Over Time",
+       x = "Year",
+       y = "Percentage of Total")
+
+```
+
+## 4. Emerging and Declining Languages
+
+```{r}
+# Calculate the percentage change in tag occurrences year-over-year
+emerging_declining_languages <- all_programming_data %>%
+  group_by(tag) %>%
+  arrange(year) %>%
+  mutate(perc_change = round((number - lag(number)) / lag(number) * 100, 2))
+
+# Filter languages with significant positive or negative changes
+emerging_languages <- emerging_declining_languages %>%
+  filter(perc_change > 50)
+
+declining_languages <- emerging_declining_languages %>%
+  filter(perc_change < -50)
+
+cat("Emerging Languages (More than 50% growth in any year):\n")
+print(emerging_languages)
+
+cat("Declining Languages (More than 50% decline in any year):\n")
+print(declining_languages)
+```
+
+## 5. Peak Popularity: Finding the year when each language was most popular
+
+```{r}
+peak_popularity <- all_programming_data %>%
+  group_by(tag) %>%
+  filter(number == max(number))
+
+cat("Peak Popularity of Each Language:\n")
+print(peak_popularity)
+
+```
