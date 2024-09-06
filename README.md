@@ -3,7 +3,7 @@
 This project explores the rise and fall of programming languages using R and includes trend analysis, peak popularity, and more insights.
 
 ## View Full HTML Report
-You can view the full HTML report [here](path/to/your/R_Project.html).
+You can view the full HTML report [here](https://github.com/trareinaung/Rise-and-Fall-Of-Programming-Languages/blob/main/R_Project.html).
 
 ```{r}
 library(readr)
